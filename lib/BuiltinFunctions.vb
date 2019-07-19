@@ -14,7 +14,7 @@
 ' MA 02111-1307, USA.
 ' 
 ' FormulaEngine - A library for parsing and managing formulas
-' Copyright © 2007 Eugene Ciloci
+' Copyright Â© 2007 Eugene Ciloci
 '
 
 ''' <summary>
@@ -689,6 +689,46 @@ Friend Class BuiltinFunctions
 		Dim sum As Double = Me.ComputeSum(processor.Values)
 		result.SetValue(sum)
 	End Sub
+	
+	<FixedArgumentFormulaFunction(3, 5, New OperandType() {OperandType.Double, OperandType.Double,
+            OperandType.Double, OperandType.Double, OperandType.Double})> _
+    	Public Sub Pmt(ByVal args As Argument(), ByVal result As FunctionResult, ByVal engine As FormulaEngine)
+		Dim rate As Double = args(0).ValueAsDouble
+		Dim nper As Double = args(1).ValueAsDouble
+		Dim pv As Double = args(2).ValueAsDouble
+
+		Try
+		    If args.Length = 3 Then
+			result.SetValue(Financial.Pmt(rate, nper, pv))
+		    Else
+			Dim fv As Double = args(3).ValueAsDouble
+			Dim due As Double = args(4).ValueAsDouble
+			result.SetValue(Financial.Pmt(rate, nper, pv, FV, due))
+		    End If
+		Catch ex As Exception
+		    result.SetError(ErrorValueType.Num)
+		End Try
+    	End Sub
+
+    	<FixedArgumentFormulaFunction(3, 5, New OperandType() {OperandType.Double, OperandType.Double,
+            OperandType.Double, OperandType.Double, OperandType.Double})> _
+    	Public Sub Rate(ByVal args As Argument(), ByVal result As FunctionResult, ByVal engine As FormulaEngine)
+		Dim nper As Double = args(0).ValueAsDouble
+		Dim pmt As Double = args(1).ValueAsDouble
+		Dim pv As Double = args(2).ValueAsDouble
+
+		Try
+		    If args.Length = 3 Then
+			result.SetValue(Financial.Rate(nper, pmt, pv))
+		    Else
+			Dim fv As Double = args(3).ValueAsDouble
+			Dim due As Double = args(4).ValueAsDouble
+			result.SetValue(Financial.Rate(nper, pmt, pv, fv, due))
+		    End If
+		Catch ex As Exception
+		    result.SetError(ErrorValueType.Num)
+		End Try
+    	End Sub
 #End Region
 
 #Region "Information functions"
